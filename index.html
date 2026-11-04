@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#b6e3e5" />
+    <title>Pixel Snow Run</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="preload"
+      href="fonts/mojangles.woff"
+      as="font"
+      type="font/woff"
+      crossorigin
+    />
+    <link rel="icon" href="game-icon.png" type="image/svg+xml" />
+  </head>
+
+  <body class="boot-visible">
+    <main>
+      <canvas
+        id="canvas"
+        aria-label="Snow platform runner. Jump across snowy gaps with Space, up arrow, or the Jump button."
+      ></canvas
+      ><canvas id="character" aria-hidden="true"></canvas>
+      <div class="hud">
+        <div class="score">POINTS<strong id="score">0</strong></div>
+        <div class="score">
+          <span id="collectLabel">GIFTS</span
+          ><strong id="gifts">0</strong> &nbsp; BEST<strong id="best">0</strong>
+        </div>
+      </div>
+      <div class="stage-status" id="stageStatus">DAY · LEVEL 1</div>
+      <div class="milestone" id="milestone" hidden>
+        <strong>NIGHTFALL</strong
+        ><span>700+ POINTS · WATCH FOR FLYING BATS</span>
+      </div>
+      <div class="controls-hint">SPACE / UP TO JUMP</div>
+      <button id="jump" aria-label="Jump">
+        <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 20h16M12 16V3m-5 5 5-5 5 5M5 16l2-3m12 3-2-3" /></svg
+        ><span>JUMP</span>
+      </button>
+      <div class="overlay selection-screen" id="overlay" hidden inert>
+        <div class="panel">
+          <small id="screenLabel">CHOOSE YOUR RUNNER</small>
+          <h1 id="title">Pixel Snow Run</h1>
+          <p id="message">
+            Choose your runner. Nightfall begins at 720 points.
+          </p>
+          <div
+            id="modePicker"
+            class="mode-picker"
+            role="group"
+            aria-label="Choose game mode"
+          >
+            <button data-mode="christmas" aria-pressed="true">
+              <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7M9 4l3 3 3-3M9 20l3-3 3 3M3 10l4-1-1-4m15 9-4 1 1 4M3 14l4 1-1 4m15-9-4-1 1-4"
+                /></svg
+              ><span>Christmas</span></button
+            ><button data-mode="halloween" aria-pressed="false">
+              <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 7V4l3-2M12 8c-7-6-13 10-5 13 2 1 3 0 5 0s3 1 5 0c8-3 2-19-5-13Z"
+                />
+                <path d="m7 12 2 2H6m11-2-2 2h3m-10 3 4 2 4-2" /></svg
+              ><span>Halloween</span>
+            </button>
+          </div>
+          <div
+            id="characterPicker"
+            class="character-picker"
+            role="group"
+            aria-label="Choose your character"
+          >
+            <button
+              class="character-card"
+              data-character="anne"
+              aria-pressed="true"
+            >
+              <span class="chosen-mark" aria-hidden="true"
+                ><svg
+                  class="action-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path d="m5 12 4 4L19 6" /></svg></span
+              ><canvas width="200" height="200" aria-hidden="true"></canvas
+              ><strong>Anne</strong
+              ><span class="character-status">Burgundy breeze</span></button
+            ><button
+              class="character-card"
+              data-character="thea"
+              aria-pressed="false"
+            >
+              <span class="chosen-mark" aria-hidden="true"
+                ><svg
+                  class="action-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path d="m5 12 4 4L19 6" /></svg></span
+              ><canvas width="200" height="200" aria-hidden="true"></canvas
+              ><strong>Thea</strong
+              ><span class="character-status">Pastel explorer</span></button
+            ><button
+              class="character-card"
+              data-character="mj"
+              aria-pressed="false"
+            >
+              <span class="chosen-mark" aria-hidden="true"
+                ><svg
+                  class="action-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path d="m5 12 4 4L19 6" /></svg></span
+              ><canvas width="200" height="200" aria-hidden="true"></canvas
+              ><strong>MJ</strong
+              ><span class="character-status">Cool runner</span></button
+            ><button
+              class="character-card"
+              data-character="lander"
+              aria-pressed="false"
+            >
+              <span class="chosen-mark" aria-hidden="true"
+                ><svg
+                  class="action-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path d="m5 12 4 4L19 6" /></svg></span
+              ><canvas width="200" height="200" aria-hidden="true"></canvas
+              ><strong>Lander</strong
+              ><span class="character-status">Helmet adventurer</span>
+            </button>
+          </div>
+          <div class="results" id="results" hidden>
+            <div class="result-grid">
+              <div class="point-card">
+                <span>CURRENT POINTS</span><strong id="currentPoints">0</strong
+                ><small>THIS RUN</small>
+              </div>
+              <div class="point-card highest">
+                <span>HIGHEST POINTS</span><strong id="highestPoints">0</strong
+                ><small>PERSONAL BEST</small>
+              </div>
+            </div>
+            <p class="run-details" id="runDetails"></p>
+            <div class="record" id="record" hidden>
+              <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M8 3h8v6a4 4 0 0 1-8 0V3Zm4 10v5m-4 3h8m-7-3h6M8 5H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4"
+                /></svg
+              ><span>NEW PERSONAL BEST</span>
+            </div>
+          </div>
+          <button id="start">
+            <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m8 5 11 7-11 7V5Z" /></svg
+            ><span>Start as Anne</span></button
+          ><button id="changeCharacter" hidden>
+            <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m20 0v-2a4 4 0 0 0-3-3.9M16 3a4 4 0 0 1 0 8"
+              />
+              <circle cx="9" cy="7" r="4" /></svg
+            ><span>Choose another character</span>
+          </button>
+        </div>
+      </div>
+      <section
+        class="boot-screen"
+        id="bootScreen"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bootTitle"
+      >
+        <div class="boot-particles" aria-hidden="true">
+          <i style="--i: 0"></i><i style="--i: 1"></i><i style="--i: 2"></i
+          ><i style="--i: 3"></i><i style="--i: 4"></i><i style="--i: 5"></i
+          ><i style="--i: 6"></i><i style="--i: 7"></i><i style="--i: 8"></i
+          ><i style="--i: 9"></i><i style="--i: 10"></i><i style="--i: 11"></i
+          ><i style="--i: 12"></i><i style="--i: 13"></i><i style="--i: 14"></i
+          ><i style="--i: 15"></i>
+        </div>
+        <div class="boot-content">
+          <div class="app-icon-wrap">
+            <img
+              src="game-icon.png"
+              class="app-icon"
+              width="128"
+              height="128"
+              alt="Pixel Run game icon"
+            /><span class="icon-glint" aria-hidden="true"></span>
+          </div>
+          <h1 class="boot-eyebrow">A</h1>
+          <h1 id="bootTitle">Pixel Run</h1>
+          <p class="boot-subtitle" id="bootSubtitle">
+            official game by Lander
+          </p>
+          <button id="launch" class="launch-button">
+            <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m8 5 11 7-11 7V5Z" /></svg
+            ><span>START GAME</span>
+          </button>
+          <div id="bootLoading" class="boot-loading" hidden>
+            <div class="loading-track-art" aria-hidden="true">
+              <canvas id="loadingRunner" width="110" height="110"></canvas
+              ><span class="track-spark one"></span
+              ><span class="track-spark two"></span
+              ><span class="track-spark three"></span>
+            </div>
+            <div class="loading-heading">
+              <span id="loadingStatus" role="status"
+                >Packing your adventure...</span
+              ><span id="loadingPercent" aria-hidden="true">0%</span>
+            </div>
+            <div
+              id="loadingBar"
+              class="loading-bar"
+              tabindex="-1"
+              role="progressbar"
+              aria-label="Loading game"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <div id="loadingFill" class="loading-fill"></div>
+            </div>
+            <p class="loading-note">waiting ngani</p>
+          </div>
+          <p class="boot-footer">CHRISTMAS &amp; HALLOWEEN EDITION</p>
+        </div>
+      </section>
+      <audio id="lobbyMusic" loop preload="none" playsinline></audio>
+      <audio id="christmasMusic" loop preload="none" playsinline></audio>
+      <audio id="halloweenMusic" loop preload="none" playsinline></audio>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
